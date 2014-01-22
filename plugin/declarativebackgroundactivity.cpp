@@ -123,6 +123,11 @@ void DeclarativeBackgroundJob::setMaximumWait(int maximum)
     }
 }
 
+QString DeclarativeBackgroundJob::id() const
+{
+    return mBackgroundActivity->id();
+}
+
 void DeclarativeBackgroundJob::begin()
 {
     if (!mComplete || !mEnabled)

@@ -61,6 +61,8 @@ private:
   void setWakeupFrequency(BackgroundActivity::Frequency slot);
   void setWakeupRange(int range_min, int range_max);
 
+  QString id() const;
+
 private slots:
   void renewKeepalivePeriod(void);
   void keepalivePeriodReply(QDBusPendingCallWatcher *call);
