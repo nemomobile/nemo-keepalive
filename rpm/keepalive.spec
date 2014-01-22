@@ -8,6 +8,8 @@ URL:        https://github.com/nemomobile/nemo-keepalive
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   dsme
 Requires:   mce
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Qml)
@@ -31,6 +33,10 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 make install INSTALL_ROOT=%{buildroot}
 
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
 %{_libdir}/lib*.so.*
@@ -40,7 +46,7 @@ make install INSTALL_ROOT=%{buildroot}
 #----------------------------------------------------------------
 %package devel
 Summary:    Development headers for libkeepalive
-Group:      Development/Headers
+Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -56,7 +62,7 @@ Development package for CPU and display keepalive and scheduling library
 #----------------------------------------------------------------
 %package examples
 Summary:    Example applications for libkeepalive
-Group:      Development/Examples
+Group:      Development/Tools
 Requires:   %{name} = %{version}-%{release}
 
 %description examples
@@ -71,7 +77,7 @@ Examples of CPU and display keepalive and scheduling library
 
 %package tests
 Summary:    Tests for libkeepalive
-Group:      System/Libraries
+Group:      Development/Tools
 Requires:   %{name} = %{version}-%{release}
 
 %description tests
