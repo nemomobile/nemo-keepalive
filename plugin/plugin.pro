@@ -5,7 +5,7 @@ TARGET   = $$qtLibraryTarget($$TARGET)
 MODULENAME = org/nemomobile/keepalive
 TARGETPATH = $$[QT_INSTALL_QML]/$$MODULENAME
 
-QT          += qml
+QT          += gui qml
 CONFIG      += plugin
 INCLUDEPATH += ../lib
 LIBS        += -L../lib -lkeepalive
