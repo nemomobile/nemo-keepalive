@@ -9,6 +9,7 @@ Source0:    %{name}-%{version}.tar.bz2
 Requires:   dsme
 Requires:   mce
 BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  mce-headers
