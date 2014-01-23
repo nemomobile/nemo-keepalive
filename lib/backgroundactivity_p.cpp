@@ -332,3 +332,9 @@ BackgroundActivityPrivate::setWakeupRange(int range_min, int range_max)
   TRACE
   setWakeup(BackgroundActivity::Range, range_min, range_max);
 }
+
+QString
+BackgroundActivityPrivate::id() const
+{
+    return m_id;
+}

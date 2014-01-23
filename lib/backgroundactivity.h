@@ -87,6 +87,8 @@ public:
   void wait(Frequency slot);
   void wait(int min_delay, int max_delay=-1);
 
+  QString id() const;
+
 public slots:
   void wait(void);
   void run(void);

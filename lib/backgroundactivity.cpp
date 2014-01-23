@@ -124,3 +124,8 @@ bool BackgroundActivity::isStopped(void) const
 {
     return state() == BackgroundActivity::Stopped;
 }
+
+QString BackgroundActivity::id() const
+{
+    return priv->id();
+}
