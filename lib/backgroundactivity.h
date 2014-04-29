@@ -61,12 +61,9 @@ public:
     EightHours        =  8 * 60 * 60, // Nemomobile
     TenHours          = 10 * 60 * 60, // Meego
     TwelveHours       = 12 * 60 * 60, // Android
+    TwentyFourHours   = 24 * 60 * 60, // Android
 
-    MaximumFrequency  = 18 * 60 * 60 // due to 16-bit libiphb ranges
-
-#if 0
-    TwentyTwoHours    = 24 * 60 * 60 // Android; >MaximumFrequency
-#endif
+    MaximumFrequency  =   0x7fffffff, // due to 32-bit libiphb ranges
   };
 
   explicit BackgroundActivity(QObject *parent = 0);

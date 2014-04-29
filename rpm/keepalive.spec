@@ -17,7 +17,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  mce-headers
 BuildRequires:  pkgconfig(dsme) >= 0.58
-BuildRequires:  pkgconfig(libiphb)
+BuildRequires:  pkgconfig(libiphb) >= 1.2.0
 
 %description
 CPU and display keepalive and scheduling library
