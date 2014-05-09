@@ -83,6 +83,7 @@ public:
         EightHours        = BackgroundActivity::EightHours,
         TenHours          = BackgroundActivity::TenHours,
         TwelveHours       = BackgroundActivity::TwelveHours,
+        TwentyFourHours   = BackgroundActivity::TwentyFourHours,
         MaximumFrequency  = BackgroundActivity::MaximumFrequency
     };
 

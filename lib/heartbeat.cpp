@@ -193,7 +193,7 @@ Heartbeat::wait(void)
       // TODO: from monotime to relative
       // TODO: timeout if already passed
     }
-    iphb_wait(m_iphb_handle, lo, hi, 0);
+    iphb_wait2(m_iphb_handle, lo, hi, 0, 1);
     m_waiting = true;
   }
 }
@@ -243,7 +243,7 @@ void
 Heartbeat::stop(void)
 {
   if( m_waiting && m_iphb_handle ) {
-    iphb_wait(m_iphb_handle, 0, 0, 0);
+    iphb_wait2(m_iphb_handle, 0, 0, 0, 0);
   }
   m_waiting = false;
   m_started = false;
