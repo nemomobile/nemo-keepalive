@@ -8,6 +8,7 @@ URL:        https://github.com/nemomobile/nemo-keepalive
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   dsme
 Requires:   mce
+Requires:   libiphb >= 1.2.0
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Core)
