@@ -57,9 +57,15 @@ public:
         Q_UNUSED(uri)
         Q_ASSERT(QLatin1String(uri) == QLatin1String(KEEPALIVE_URI));
 
-        qmlRegisterSingletonType<DisplayBlanking>(KEEPALIVE_URI, 1, 0, "DisplayBlanking", display_blanking_api_factory);
+        // 1.0 KeepAlive is a singleton object
+        qmlRegisterSingletonType<DisplayBlanking>(KEEPALIVE_URI,      1, 0, "DisplayBlanking", display_blanking_api_factory);
         qmlRegisterSingletonType<DeclarativeKeepAlive>(KEEPALIVE_URI, 1, 0, "KeepAlive", keepalive_api_factory);
-        qmlRegisterType<DeclarativeBackgroundJob>(KEEPALIVE_URI, 1, 0, "BackgroundJob");
+        qmlRegisterType<DeclarativeBackgroundJob>(KEEPALIVE_URI,      1, 0, "BackgroundJob");
+
+        // 1.1 KeepAlive is an instantiable class
+        qmlRegisterSingletonType<DisplayBlanking>(KEEPALIVE_URI, 1, 1, "DisplayBlanking", display_blanking_api_factory);
+        qmlRegisterType<DeclarativeKeepAlive>(KEEPALIVE_URI,     1, 1, "KeepAlive");
+        qmlRegisterType<DeclarativeBackgroundJob>(KEEPALIVE_URI, 1, 1, "BackgroundJob");
     }
 };
 
