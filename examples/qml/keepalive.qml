@@ -6,13 +6,17 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import org.nemomobile.keepalive 1.0
+import org.nemomobile.keepalive 1.1
 
 ApplicationWindow {
   property var startTime
   property var currentTime
 
   initialPage: Page {
+    KeepAlive {
+        id: keepAlive
+    }
+
     Timer {
         id: timer
         property int count
@@ -36,7 +40,7 @@ ApplicationWindow {
                 currentTime = new Date()
                 timer.count = 0
                 timer.restart()
-                KeepAlive.enabled = checked
+                keepAlive.enabled = checked
             }
         }
         Label {

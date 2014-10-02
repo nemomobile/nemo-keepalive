@@ -6,7 +6,7 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import org.nemomobile.keepalive 1.0
+import org.nemomobile.keepalive 1.1
 
 ApplicationWindow {
     property string status: DisplayBlanking.status == DisplayBlanking.Off ? "off"
