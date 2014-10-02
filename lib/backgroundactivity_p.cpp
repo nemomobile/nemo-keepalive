@@ -42,7 +42,7 @@ static QString get_unique_id(void)
 {
   static unsigned id = 0;
   char temp[32];
-  snprintf(temp, sizeof temp, "KeepDisplayOn-%u", ++id);
+  snprintf(temp, sizeof temp, "BlockSuspend-%u", ++id);
   return QString(temp);
 }
 
