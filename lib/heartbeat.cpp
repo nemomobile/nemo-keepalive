@@ -202,6 +202,7 @@ Heartbeat::wait(void)
 void
 Heartbeat::wakeup(int fd)
 {
+  /* Assume socket connection is to be kept open */
   bool keep_going = true;
 
   /* The data itself is not interesting, we just want to
@@ -209,6 +210,7 @@ Heartbeat::wakeup(int fd)
   char buf[256];
   int rc = read(fd, buf, sizeof buf);
 
+  /* Deal with I/O errors */
   if( rc == -1 ) {
     switch( errno ) {
     case EAGAIN:
@@ -221,21 +223,43 @@ Heartbeat::wakeup(int fd)
       keep_going = false;
       break;
     }
+    goto cleanup;
   }
-  else if( rc == 0 ) {
+
+  /* Deal with closed socket */
+  if( rc == 0 ) {
     // EOF -> assume dsme restart -> reset connection
     keep_going = false;
-  }
-  else {
-    m_started = false;
-    emit timeout();
+    goto cleanup;
   }
 
+  /* Ignore any spurious wakeups */
+  if( !m_waiting ) {
+    qWarning("unexpected heartbeat wakeup; ignored");
+    goto cleanup;
+  }
+
+  /* Clear state flags first */
   m_waiting = false;
+  m_started = false;
+
+  /* Then notify upper level logic */
+  emit timeout();
+
+cleanup:
 
   if( !keep_going ) {
-    // Terminate lost connection & start reconnect attempt
+    // Remember if timer was started
+    bool was_started = m_started;
+
+    // Terminate lost connection
+    qWarning("lost heartbeat connection; reconnecting");
     disconnect();
+
+    // Restore started flag
+    m_started = was_started;
+
+    // Start reconnect attempt
     connect();
   }
 }
