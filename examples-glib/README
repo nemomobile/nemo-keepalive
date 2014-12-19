@@ -1,0 +1,16 @@
+Note: The example source do not use headers from source tree, i.e.
+      libkeepalive-glib and libkeepalive-glib-devel packages need
+      to be installed - similarly to real applications that would
+      use the interfaces.
+
+block-suspend.c
+	Uses cpukeepalive_t to block suspend.
+
+keep-display-on.c
+	Uses displaykeepalive_t to block timer based display blanking.
+
+periodic-wakeup.c
+	Uses background_activity_t to periodically wake up from suspend.
+
+simple-timer-wakeup.c
+	Used g_timeout_add() lookalike functions to wake up from suspend.
