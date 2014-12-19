@@ -32,7 +32,7 @@ CPU and display keepalive and scheduling library
 %build
 %qmake5
 make %{?jobs:-j%jobs}
-make -C lib-glib %{?jobs:-j%jobs}
+make -C lib-glib %{?jobs:-j%jobs} VERS=%{version}
 
 %install
 rm -rf %{buildroot}
