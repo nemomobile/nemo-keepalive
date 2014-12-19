@@ -34,7 +34,7 @@ make -C lib-glib %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 make install INSTALL_ROOT=%{buildroot}
-make -C lib-glib install ROOT=%{buildroot}
+make -C lib-glib install ROOT=%{buildroot} VERS=%{version}
 
 %post -p /sbin/ldconfig
 

@@ -4,7 +4,10 @@
 
 NAME     ?= libkeepalive-glib
 ROOT     ?= /tmp/test/$(NAME)
-VERS     := $(shell awk '/^Version:/ { print $$2 }' ../rpm/keepalive.spec)
+
+# Needed for local builds with make; rpm build will set it via spec file
+VERS     ?= $(shell awk '/^Version:/ { print $$2 }' ../rpm/keepalive.spec)
+VERS     := $(VERS)
 
 # Note: library versioning != package versioning
 SO_VERS  ?= .so.1.0.0
