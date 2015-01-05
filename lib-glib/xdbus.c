@@ -139,7 +139,7 @@ xdbus_method_call(DBusConnection *con,
 
 /** Helper for making async dbus method calls without waiting for reply
  */
- void
+void
 xdbus_simple_call(DBusConnection *con,
                   const char *service,
                   const char *object,
