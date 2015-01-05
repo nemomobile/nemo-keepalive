@@ -146,7 +146,7 @@ struct displaykeepalive_t
 // CONSTRUCT_DESTRUCT
 static void              displaykeepalive_ctor                          (displaykeepalive_t *self);
 static void              displaykeepalive_dtor                          (displaykeepalive_t *self);
-static bool              displaykeepalive_is_valid                      (displaykeepalive_t *self);
+static bool              displaykeepalive_is_valid                      (const displaykeepalive_t *self);
 
 // KEEPALIVE_SESSION
 static void              displaykeepalive_session_ipc                   (displaykeepalive_t *self, const char *method);
@@ -257,7 +257,7 @@ displaykeepalive_dtor(displaykeepalive_t *self)
 /** Predicate for: displaykeepalive_t object is valid
  */
 static bool
-displaykeepalive_is_valid(displaykeepalive_t *self)
+displaykeepalive_is_valid(const displaykeepalive_t *self)
 {
     return self && self->dka_majick == DISPLAYKEEPALIVE_MAJICK_ALIVE;
 }
@@ -1049,26 +1049,40 @@ cleanup:
 void
 displaykeepalive_start(displaykeepalive_t *self)
 {
-    if( displaykeepalive_is_valid(self) && !self->dka_requested ) {
-        /* Set we-want-to-prevent-blanking flag */
-        self->dka_requested = true;
+    if( !displaykeepalive_is_valid(self) )
+        goto cleanup;
 
-        /* Connect to systembus */
-        displaykeepalive_dbus_connect(self);
+    if( self->dka_requested )
+        goto cleanup;
 
-        /* Check if keepalive session can be started */
-        displaykeepalive_rethink_schedule(self);
-    }
+    /* Set we-want-to-prevent-blanking flag */
+    self->dka_requested = true;
+
+    /* Connect to systembus */
+    displaykeepalive_dbus_connect(self);
+
+    /* Check if keepalive session can be started */
+    displaykeepalive_rethink_schedule(self);
+
+cleanup:
+    return;
 }
 
 void
 displaykeepalive_stop(displaykeepalive_t *self)
 {
-    if( displaykeepalive_is_valid(self) && self->dka_requested ) {
-        /* Clear we-want-to-prevent-blanking flag */
-        self->dka_requested = false;
+    if( !displaykeepalive_is_valid(self) )
+        goto cleanup;
 
-        /* Check if keepalive session needs to be stopped */
-        displaykeepalive_rethink_schedule(self);
-    }
+    if( !self->dka_requested )
+        goto cleanup;
+
+    /* Clear we-want-to-prevent-blanking flag */
+    self->dka_requested = false;
+
+    /* Check if keepalive session needs to be stopped */
+    displaykeepalive_rethink_schedule(self);
+
+cleanup:
+    return;
 }

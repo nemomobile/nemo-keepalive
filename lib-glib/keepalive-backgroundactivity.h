@@ -93,11 +93,13 @@ typedef enum
  *
  * Will be automatically released after reference count drops to zero.
  *
- * @return pointer to background activity object
+ * @return pointer to background activity object, or NULL
  */
 background_activity_t *background_activity_new(void);
 
 /** Increment reference count of background activity object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
  *
  * @param self  background activity object pointer
  *
@@ -106,6 +108,8 @@ background_activity_t *background_activity_new(void);
 background_activity_t *background_activity_ref(background_activity_t *self);
 
 /** Decrement reference count of background activity object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
  *
  * The object will be released if reference count reaches zero.
  *

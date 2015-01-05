@@ -150,13 +150,16 @@ static void wakeup_delay_set_range (wakeup_delay_t *self, int range_lo, int rang
 static bool wakeup_delay_eq_p      (const wakeup_delay_t *self, const wakeup_delay_t *that);
 
 // CONSTRUCT_DESTRUCT
-static void background_activity_ctor  (background_activity_t *self);
-static void background_activity_dtor  (background_activity_t *self);
+static void background_activity_ctor      (background_activity_t *self);
+static void background_activity_dtor      (background_activity_t *self);
+static bool background_activity_is_valid  (const background_activity_t *self);
 
 // STATE_TRANSITIONS
 
 static background_activity_state_t background_activity_get_state (const background_activity_t *self);
 static void                        background_activity_set_state (background_activity_t *self, background_activity_state_t state);
+static bool                        background_activity_in_state  (const background_activity_t *self,
+                                                                  background_activity_state_t state);
 
 // HEARTBEAT_WAKEUP
 
@@ -253,7 +256,7 @@ wakeup_delay_eq_p(const wakeup_delay_t *self, const wakeup_delay_t *that)
  * @return true if pointer is likely to be valid, false otherwise
  */
 static bool
-background_activity_is_valid(background_activity_t *self)
+background_activity_is_valid(const background_activity_t *self)
 {
     return self && self->bga_majick == BACKGROUND_ACTIVITY_MAJICK_ALIVE;
 }
@@ -336,6 +339,13 @@ static void
 background_activity_set_state(background_activity_t *self,
                               background_activity_state_t state)
 {
+    /* This function is called directly from public helpers, so
+     * the object pointer must be validated */
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
+    /* Skip if state does not change; note that changing the length
+     * of wait while already waiting is considered a state change */
     if( self->bga_state == state ) {
         if( state != BACKGROUND_ACTIVITY_STATE_WAITING )
             goto cleanup;
@@ -444,6 +454,31 @@ background_activity_get_state(const background_activity_t *self)
     return self->bga_state;
 }
 
+/** Predicate function for checking state of background activity object
+ *
+ * @param self   background activity object pointer
+ * @param state  state to check
+ *
+ * @return true if object is valid and in the given state, false otherwise
+ */
+static bool
+background_activity_in_state(const background_activity_t *self,
+                             background_activity_state_t state)
+{
+    bool in_state = false;
+
+    /* This function is called directly from public helpers, so
+     * the object pointer must be validated */
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
+    if( background_activity_get_state(self) == state )
+        in_state = true;
+
+cleanup:
+    return in_state;
+}
+
 /* ------------------------------------------------------------------------- *
  * HEARTBEAT_WAKEUP
  * ------------------------------------------------------------------------- */
@@ -519,95 +554,154 @@ cleanup:
 background_activity_frequency_t
 background_activity_get_wakeup_slot(const background_activity_t *self)
 {
-    return self->bga_wakeup_curr.wd_slot;
+    background_activity_frequency_t slot = BACKGROUND_ACTIVITY_FREQUENCY_RANGE;
+
+    if( background_activity_is_valid(self) )
+        slot = self->bga_wakeup_curr.wd_slot;
+
+    return slot;
 }
 
 void
 background_activity_set_wakeup_slot(background_activity_t *self,
                                     background_activity_frequency_t slot)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     wakeup_delay_set_slot(&self->bga_wakeup_curr, slot);
+
+cleanup:
+    return;
 }
 
 void
 background_activity_get_wakeup_range(const background_activity_t *self,
                                      int *range_lo, int *range_hi)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     *range_lo = self->bga_wakeup_curr.wd_range_lo;
     *range_hi = self->bga_wakeup_curr.wd_range_hi;
+
+cleanup:
+    return;
 }
 
 void
 background_activity_set_wakeup_range(background_activity_t *self,
                                      int range_lo, int range_hi)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     wakeup_delay_set_range(&self->bga_wakeup_curr, range_lo, range_hi);
+
+cleanup:
+    return;
 }
 
 bool
 background_activity_is_waiting(const background_activity_t *self)
 {
-    return background_activity_get_state(self) == BACKGROUND_ACTIVITY_STATE_WAITING;
+    /* The self pointer is validated by background_activity_in_state() */
+    return background_activity_in_state(self,
+                                        BACKGROUND_ACTIVITY_STATE_WAITING);
 }
 
 bool
 background_activity_is_running(const background_activity_t *self)
 {
-    return background_activity_get_state(self) == BACKGROUND_ACTIVITY_STATE_RUNNING;
+    /* The self pointer is validated by background_activity_in_state() */
+    return background_activity_in_state(self,
+                                        BACKGROUND_ACTIVITY_STATE_RUNNING);
 }
 
 bool
 background_activity_is_stopped(const background_activity_t *self)
 {
-    return background_activity_get_state(self) == BACKGROUND_ACTIVITY_STATE_RUNNING;
+    /* The self pointer is validated by background_activity_in_state() */
+    return background_activity_in_state(self,
+                                        BACKGROUND_ACTIVITY_STATE_STOPPED);
 }
 
 void background_activity_wait(background_activity_t *self)
 {
+    /* The self pointer is validated by background_activity_set_state() */
     background_activity_set_state(self, BACKGROUND_ACTIVITY_STATE_WAITING);
 }
 
 void background_activity_run(background_activity_t *self)
 {
+    /* The self pointer is validated by background_activity_set_state() */
     background_activity_set_state(self, BACKGROUND_ACTIVITY_STATE_RUNNING);
 }
 
 void background_activity_stop(background_activity_t *self)
 {
+    /* The self pointer is validated by background_activity_set_state() */
     background_activity_set_state(self, BACKGROUND_ACTIVITY_STATE_STOPPED);
 }
 
 const char *
 background_activity_get_id(const background_activity_t *self)
 {
-    return cpukeepalive_get_id(self->bga_keepalive);
+    const char *id = 0;
+
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
+    id = cpukeepalive_get_id(self->bga_keepalive);
+
+cleanup:
+    return id;
 }
 
 void
 background_activity_free_user_data(background_activity_t *self)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     if( self->bga_user_data && self->bga_user_free )
          self->bga_user_free(self->bga_user_data);
 
     self->bga_user_data = 0;
     self->bga_user_free = 0;
 
+cleanup:
+    return;
 }
 
 void *
 background_activity_get_user_data(const background_activity_t *self)
 {
-    return self->bga_user_data;
+    void *user_data = 0;
+
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
+    user_data = self->bga_user_data;
+
+cleanup:
+    return user_data;
 }
 
 void *
 background_activity_steal_user_data(background_activity_t *self)
 {
-    void *user_data = self->bga_user_data;
+    void *user_data = 0;
+
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
+    user_data = self->bga_user_data;
 
     self->bga_user_data = 0;
     self->bga_user_free = 0;
 
+cleanup:
     return user_data;
 }
 
@@ -616,29 +710,55 @@ background_activity_set_user_data(background_activity_t *self,
                                   void *user_data,
                                   background_activity_free_fn free_cb)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
+    /* Release old user data */
     background_activity_free_user_data(self);
 
+    /* Attach new user data */
     self->bga_user_data = user_data;
     self->bga_user_free = free_cb;
+
+cleanup:
+    return;
 }
 
 void
 background_activity_set_running_callback(background_activity_t *self,
                                          background_activity_event_fn cb)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     self->bga_running_cb = cb;
+
+cleanup:
+    return;
 }
 
 void
 background_activity_set_waiting_callback(background_activity_t *self,
                                          background_activity_event_fn cb)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     self->bga_waiting_cb = cb;
+
+cleanup:
+    return;
 }
 
 void
 background_activity_set_stopped_callback(background_activity_t *self,
                                          background_activity_event_fn cb)
 {
+    if( !background_activity_is_valid(self) )
+        goto cleanup;
+
     self->bga_stopped_cb = cb;
+
+cleanup:
+    return;
 }

@@ -857,28 +857,42 @@ cleanup:
 void
 cpukeepalive_start(cpukeepalive_t *self)
 {
-    if( cpukeepalive_is_valid(self) && !self->cka_requested ) {
-        /* Set we-want-to-prevent-blanking flag */
-        self->cka_requested = true;
+    if( !cpukeepalive_is_valid(self) )
+        goto cleanup;
 
-        /* Connect to systembus */
-        cpukeepalive_dbus_connect(self);
+    if( self->cka_requested )
+        goto cleanup;
 
-        /* Check if keepalive session can be started */
-        cpukeepalive_rethink_now(self);
-    }
+    /* Set we-want-to-prevent-blanking flag */
+    self->cka_requested = true;
+
+    /* Connect to systembus */
+    cpukeepalive_dbus_connect(self);
+
+    /* Check if keepalive session can be started */
+    cpukeepalive_rethink_now(self);
+
+cleanup:
+    return;
 }
 
 void
 cpukeepalive_stop(cpukeepalive_t *self)
 {
-    if( cpukeepalive_is_valid(self) && self->cka_requested ) {
-        /* Clear we-want-to-prevent-blanking flag */
-        self->cka_requested = false;
+    if( !cpukeepalive_is_valid(self) )
+        goto cleanup;
 
-        /* Check if keepalive session needs to be stopped */
-        cpukeepalive_rethink_now(self);
-    }
+    if( !self->cka_requested )
+        goto cleanup;
+
+    /* Clear we-want-to-prevent-blanking flag */
+    self->cka_requested = false;
+
+    /* Check if keepalive session needs to be stopped */
+    cpukeepalive_rethink_now(self);
+
+cleanup:
+    return;
 }
 
 const char *cpukeepalive_get_id(const cpukeepalive_t *self)

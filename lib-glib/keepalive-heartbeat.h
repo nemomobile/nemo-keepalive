@@ -70,11 +70,13 @@ typedef void (*heartbeat_free_fn)(void *aptr);
  *
  * Will be automatically released after reference count drops to zero.
  *
- * @return pointer to heartbeat wakeup object
+ * @return pointer to heartbeat wakeup object, or NULL
  */
 heartbeat_t *heartbeat_new(void);
 
 /** Increment reference count of heartbeat wakeup object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
  *
  * @param self heartbeat wakeup object pointer
  *
@@ -83,6 +85,8 @@ heartbeat_t *heartbeat_new(void);
 heartbeat_t *heartbeat_ref(heartbeat_t *self);
 
 /** Decrement reference count of heartbeat wakeup object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
  *
  * The object will be released if reference count reaches zero.
  *

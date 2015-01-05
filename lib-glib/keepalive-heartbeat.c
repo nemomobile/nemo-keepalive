@@ -592,6 +592,9 @@ heartbeat_set_delay(heartbeat_t *self, int delay_lo, int delay_hi)
 {
     log_enter_function();
 
+    if( !heartbeat_is_valid(self) )
+        goto cleanup;
+
     if( delay_lo < 1 )
         delay_lo = 1;
 
@@ -600,6 +603,9 @@ heartbeat_set_delay(heartbeat_t *self, int delay_lo, int delay_hi)
 
     self->hb_delay_lo = delay_lo;
     self->hb_delay_hi = delay_hi;
+
+cleanup:
+    return;
 }
 
 void
@@ -607,8 +613,14 @@ heartbeat_start(heartbeat_t *self)
 {
     log_enter_function();
 
+    if( !heartbeat_is_valid(self) )
+        goto cleanup;
+
     self->hb_started = true;
     heartbeat_iphb_wakeup_schedule(self);
+
+cleanup:
+    return;
 }
 
 void
@@ -616,9 +628,15 @@ heartbeat_stop(heartbeat_t *self)
 {
     log_enter_function();
 
+    if( !heartbeat_is_valid(self) )
+        goto cleanup;
+
     if( self->hb_waiting && self->hb_iphb_handle )
         iphb_wait2(self->hb_iphb_handle, 0, 0, 0, 0);
 
     self->hb_waiting = false;
     self->hb_started = false;
+
+cleanup:
+    return;
 }

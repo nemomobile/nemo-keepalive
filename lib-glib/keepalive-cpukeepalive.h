@@ -51,11 +51,13 @@ typedef struct cpukeepalive_t cpukeepalive_t;
  *
  * Will be automatically released after reference count drops to zero.
  *
- * @return pointer to cpu keepalive object
+ * @return pointer to cpu keepalive object, or NULL
  */
 cpukeepalive_t *cpukeepalive_new(void);
 
 /** Increment reference count of cpu keepalive object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
  *
  * @param self  cpu keepalive object
  *
@@ -64,6 +66,8 @@ cpukeepalive_t *cpukeepalive_new(void);
 cpukeepalive_t *cpukeepalive_ref(cpukeepalive_t *self);
 
 /** Decrement reference count of cpu keepalive object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
  *
  * @param self  cpu keepalive object
  *

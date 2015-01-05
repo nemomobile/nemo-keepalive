@@ -51,11 +51,15 @@ typedef struct displaykeepalive_t displaykeepalive_t;
  *
  * Will be automatically released after reference count drops to zero.
  *
- * @return pointer to display keepalive object
+ * @return pointer to display keepalive object, or NULL
  */
 displaykeepalive_t *displaykeepalive_new(void);
 
 /** Increment reference count of display keepalive object
+ *
+ * Passing NULL object is explicitly allowed and does nothing.
+ *
+ * @param self display keepalive object pointer
  *
  * @return pointer to display keepalive object, or NULL in case of errors
  */
@@ -63,7 +67,11 @@ displaykeepalive_t *displaykeepalive_ref(displaykeepalive_t *self);
 
 /** Decrement reference count of display keepalive object
  *
+ * Passing NULL object is explicitly allowed and does nothing.
+ *
  * The object will be released if reference count reaches zero.
+ *
+ * @param self display keepalive object pointer
  */
 void displaykeepalive_unref(displaykeepalive_t *self);
 
