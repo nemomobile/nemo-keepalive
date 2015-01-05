@@ -296,7 +296,15 @@ void *background_activity_get_user_data(const background_activity_t *self);
  */
 void background_activity_free_user_data(background_activity_t *self);
 
-/** Clear user_data without freeing it
+/** Detach user_data from background activity object without freeing it
+ *
+ * Normally user data attached to background activity objects is
+ * released when object is deleted or replaced by new user data.
+ * If this is not desirable for some reason, the user data can be
+ * detached from object via background_activity_steal_user_data().
+ *
+ * The caller must release the returned data as appropriate when
+ * it is no longer needed.
  *
  * @param self       background activity object pointer
  *
