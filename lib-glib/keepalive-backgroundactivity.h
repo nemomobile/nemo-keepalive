@@ -46,10 +46,10 @@ typedef struct background_activity_t background_activity_t;
 
 /** Background activity notification function type
  *
- * @param aptr  user_data set via background_activity_set_user_data()
+ * @param activity   background activity object pointer
+ * @param user_data  data pointer set via background_activity_set_user_data()
  */
-typedef void (*background_activity_event_fn)(background_activity_t *,
-                                             void *);
+typedef void (*background_activity_event_fn)(background_activity_t *activity, void *user_data);
 
 /** User data free function type
  *
