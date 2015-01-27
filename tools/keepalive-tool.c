@@ -82,6 +82,7 @@ static struct Keepalive *keepalive_new(char **argv, struct KeepaliveOptions *opt
     dbus_error_free(&error);
 
     keepalive->cpukeepalive = cpukeepalive_new();
+    cpukeepalive_start(keepalive->cpukeepalive);
 
     keepalive->options = options;
 
@@ -105,7 +106,6 @@ static struct Keepalive *keepalive_new(char **argv, struct KeepaliveOptions *opt
 
 static struct Keepalive *keepalive_run(struct Keepalive *keepalive)
 {
-    cpukeepalive_start(keepalive->cpukeepalive);
     g_main_loop_run(keepalive->mainloop_handle);
     cpukeepalive_stop(keepalive->cpukeepalive);
     return keepalive;
