@@ -33,11 +33,13 @@ CPU and display keepalive and scheduling library
 %qmake5
 make %{?jobs:-j%jobs}
 make -C lib-glib %{?jobs:-j%jobs} VERS=%{version}
+make -C tools %{?jobs:-j%jobs} VERS=%{version}
 
 %install
 rm -rf %{buildroot}
 make install INSTALL_ROOT=%{buildroot}
 make -C lib-glib install ROOT=%{buildroot} VERS=%{version}
+make -C tools install ROOT=%{buildroot} VERS=%{version}
 
 %post -p /sbin/ldconfig
 
@@ -107,6 +109,18 @@ CPU and display keepalive and scheduling library
 %files glib
 %defattr(-,root,root,-)
 %{_libdir}/libkeepalive-glib.so.*
+
+#----------------------------------------------------------------
+%package glib-tools
+Summary:    CPU and display keepalive tools
+Group:      System/System Control
+
+%description glib-tools
+CPU and display keepalive tools
+
+%files glib-tools
+%defattr(-,root,root,-)
+%{_bindir}/keepalive-tool
 
 #----------------------------------------------------------------
 %package glib-devel
