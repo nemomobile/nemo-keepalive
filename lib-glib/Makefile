@@ -114,6 +114,7 @@ LDLIBS   += $(PKG_LDLIBS)
 
 %$(SO_VERS) :
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+	ln -sf  $@ $(NAME).so
 
 %.o : %.c
 	$(CC) -o $@ -c $< $(CPPFLAGS) $(CFLAGS)

@@ -29,7 +29,7 @@
 #include <glib.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
-#include <keepalive-glib/keepalive-cpukeepalive.h>
+#include "keepalive-cpukeepalive.h"
 
 #define failure(FMT, ARGS...) do {\
     fprintf(stderr, "%s: "FMT"\n", __FUNCTION__, ## ARGS);\

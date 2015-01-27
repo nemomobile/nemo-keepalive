@@ -52,6 +52,7 @@ PKG_NAMES  += dbus-1
 PKG_NAMES  += dbus-glib-1
 
 # We need to link against the locally-built library
+CFLAGS += -I../lib-glib
 LDLIBS += -L../lib-glib -lkeepalive-glib
 
 PKG_CFLAGS := $(shell pkg-config --cflags $(PKG_NAMES))
