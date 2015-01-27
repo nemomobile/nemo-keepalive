@@ -1,6 +1,6 @@
 Name:       libkeepalive
 Summary:    CPU and display keepalive and scheduling library
-Version:    1.3.1
+Version:    1.3.2
 Release:    1
 Group:      System/System Control
 License:    LGPLv2.1
