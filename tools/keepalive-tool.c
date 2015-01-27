@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <glib.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
@@ -154,6 +155,10 @@ int main(int argc, char **argv)
     GError *error = 0;
     if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
         failure("Option parsing: %s", error->message);
+    }
+    if (argc > 1 && strcmp(argv[1], "--") == 0) {
+        argv++;
+        argc--;
     }
     if (argc == 1) {
         fprintf(stderr, "Error: No command specified. Use -h/--help for help.\n");
