@@ -28,6 +28,9 @@
 
 #include "logging.h"
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -283,7 +286,11 @@ heartbeat_iphb_wakeup_cb(GIOChannel *chn,
 
     char buf[256];
 
-    int rc = read(fd, buf, sizeof buf);
+    /* Stopping/reprogramming iphb flushes pending input
+     * from the socket. If that happens after decision
+     * to call this input callback is already made, simple
+     * read could block and that can't be allowed. */
+    int rc = recv(fd, buf, sizeof buf, MSG_DONTWAIT);
 
     if( rc == 0 ) {
         log_error(PFIX"unexpected eof");
@@ -291,7 +298,7 @@ heartbeat_iphb_wakeup_cb(GIOChannel *chn,
     }
 
     if( rc == -1 ) {
-        if( errno == EINTR || errno == EAGAIN )
+        if( errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK )
             goto cleanup_ack;
 
         log_error(PFIX"read error: %m");
