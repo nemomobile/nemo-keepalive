@@ -24,6 +24,9 @@
 **
 ****************************************************************************************/
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -208,20 +211,21 @@ Heartbeat::wakeup(int fd)
   /* The data itself is not interesting, we just want to
    * know whether the read succeeded or not */
   char buf[256];
-  int rc = read(fd, buf, sizeof buf);
+
+  /* Stopping/reprogramming iphb flushes pending input
+   * from the socket. If that happens after decision
+   * to call this input callback is already made, simple
+   * read could block and that can't be allowed. */
+  int rc = recv(fd, buf, sizeof buf, MSG_DONTWAIT);
 
   /* Deal with I/O errors */
   if( rc == -1 ) {
-    switch( errno ) {
-    case EAGAIN:
-    case EINTR:
+    if( errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK ) {
       // Recoverable errors -> ignored
-      break;
-
-    default:
+    }
+    else {
       // Irrecoverable errors -> reset connection
       keep_going = false;
-      break;
     }
     goto cleanup;
   }
